@@ -158,38 +158,3 @@ int main(void)
 
     return (0);
 }
-
-
-//int main(void)
-//{
-//    int fd;
-//    int ret;
-//    char buf[BUFF_SIZE + 1];
-//    char static **line; // Need static?
-//    char *resstring = NULL;
-//
-//    fd = open("C:\\Users\\HumanAlone\\CLionProjects\\PrataStephen\\text.txt", O_RDONLY);
-//    while ((ret = read(fd, buf, BUFF_SIZE)))
-//    {
-//        buf[ret] = '\0';
-//        if (!resstring)
-//        {
-//            resstring = (char *) malloc(sizeof(char) * (ret + 1));
-//            strcpy(resstring, buf);
-//        }
-//        else
-//        {
-//            resstring = ft_strjoin(resstring, buf);
-//        }
-//
-//    }
-//    printf("%s", resstring);
-//    line = ft_strsplit(resstring, '\n');
-//    while (*line != NULL)
-//    {
-//        printf("Tuta!");
-//        printf("%s", *line);
-//        line++;
-//    }
-//    return (0);
-//}
