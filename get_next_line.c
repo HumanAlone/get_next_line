@@ -9,7 +9,39 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-#define BUFF_SIZE 32
+#define BUFF_SIZE 42
+
+char	*ft_strnew(size_t size)
+{
+    char	*string;
+    char	*begin;
+    size_t	over;
+
+    over = 0;
+    if (size == over - 1)
+        return (NULL);
+    if ((string = (char *)malloc(sizeof(char) * (size + 1))))
+    {
+        begin = string;
+        while (size)
+        {
+            *begin++ = '\0';
+            size--;
+        }
+        *begin = '\0';
+        return (string);
+    }
+    return (NULL);
+}
+
+void	ft_strdel(char **as)
+{
+    if (as)
+    {
+        free(*as);
+        *as = NULL;
+    }
+}
 
 char	*ft_strcpy(char *dst, const char *src)
 {
@@ -58,7 +90,6 @@ char  *ft_strjoin(char const *s1, char const *s2)
     }
     return (NULL);
 }
-
 
 char *ft_strsub(char const *s, unsigned int start, size_t len)
 {
@@ -109,77 +140,20 @@ char *strread(int fd)
 {
     int ret;
     char buf[BUFF_SIZE + 1];
-    char *resstring = NULL;
+    char *resstring;
     char *buffer_free;
+
+    resstring = ft_strnew(0);
     while ((ret = read(fd, buf, BUFF_SIZE)))
     {
         if (ret == -1)
             return (NULL);
         buf[ret] = '\0';
-        if (!resstring)
-        {
-            resstring = (char *)malloc(sizeof(char) * (ret + 1));
-            ft_strcpy(resstring, buf);
-        }
-        else
-        {
-            buffer_free = resstring;
-            resstring = ft_strjoin(resstring, buf);
-            free(buffer_free);
-        }
+        buffer_free = resstring;
+        resstring = ft_strjoin(resstring, buf);
+        free(buffer_free);
     }
     return (resstring);
-}
-
-static size_t	trimlen(char const *s)
-{
-    size_t		len;
-    char const	*end;
-
-    len = ft_strlen(s);
-    end = s;
-    while (*end)
-        end++;
-    end--;
-    if (len == 0)
-        return (0);
-    while (*end == '\n' || *end == '\0')
-    {
-        len--;
-        end--;
-    }
-    return (len);
-}
-
-char			*ft_rstrtrim(char const *s)
-{
-    char	*res;
-    char	*res1;
-    size_t	len;
-    size_t	over;
-
-    over = 0;
-    if (!s)
-        return (NULL);
-    len = trimlen(s);
-    if (len == over - 2)
-        return (NULL);
-    if ((res = (char *)malloc(sizeof(char) * (len + 2))) != NULL)
-    {
-        res1 = res;
-//        while (*s == ' ' || *s == '\t' || *s == '\n')
-//            s++;
-        while (len)
-        {
-            *res1++ = *s++;
-            len--;
-        }
-        *res1 = '\n';
-        res1++;
-        *res1 = '\0';
-        return (res);
-    }
-    return (NULL);
 }
 
 int get_next_line(const int fd, char **line)
@@ -190,15 +164,11 @@ int get_next_line(const int fd, char **line)
     int len;
 
     len = 0;
-    if (fd < 0 || !line || fd > 4864)
+    if (fd < 0 || !line || fd > 4864 || BUFF_SIZE < 1)
         return (-1);
     if (!strarr[fd])
-    {
-        strarr[fd] = ft_rstrtrim(strread(fd));
-        //printf("%s\n\n", strarr[fd]);
-        if (!strarr[fd])
+        if (!(strarr[fd] = strread(fd)))
             return (-1);
-    }
     //printf("%s\n", strarr[fd]);
     start = strarr[fd];
     while ((*strarr[fd] || len) )
@@ -210,8 +180,7 @@ int get_next_line(const int fd, char **line)
             strnew = ft_strdup(strarr[fd]);
             free(start);
             strarr[fd] = ft_strdup(strnew);
-
-            printf("%s\n", *line);
+            printf("*line %s\n", *line);
             return (1);
         }
         len++;
